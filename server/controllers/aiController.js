@@ -64,6 +64,10 @@ const analyzeSleep = async (req, res) => {
 const generateRoutine = async (req, res) => {
   try {
     const { bedTime, wakeTime } = req.body;
+
+    const bedTimeStr = bedTime || "23:00";
+    const wakeTimeStr = wakeTime || "07:00";
+
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -72,14 +76,15 @@ const generateRoutine = async (req, res) => {
         {
           role: "system",
           content:
-            "You are SleepAI. Create a 5 step wind down bedtime routine.",
+            "You are SleepAI. Create a 5 step wind down bedtime routine. Number each step.",
         },
         {
           role: "user",
-          content: `Bedtime: ${bedTime}, Wake time: ${wakeTime}. Create my routine.`,
+          content: `My bedtime is ${bedTimeStr} and I wake up at ${wakeTimeStr}. Create my wind down routine.`,
         },
       ],
     });
+
     res.json({ routine: completion.choices[0].message.content });
   } catch (error) {
     console.log("AI routine error:", error.message);
