@@ -25,15 +25,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password) => {
-    const { data } = await API.post("/auth/register", {
-      name,
-      email,
-      password,
-    });
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data));
-    setUser(data);
-    return data;
+    try {
+      console.log("Sending register request:", { name, email, password });
+      const { data } = await API.post("/auth/register", {
+        name: name,
+        email: email,
+        password: password,
+      });
+      console.log("Register response:", data);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data));
+      setUser(data);
+      return data;
+    } catch (error) {
+      console.log("Register error details:", error.response?.data);
+      const msg = error.response?.data?.message || "Register failed";
+      throw new Error(msg);
+    }
   };
 
   const logout = () => {
