@@ -13,13 +13,25 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!name || !email || !password) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
     try {
       await register(name, email, password);
       toast.success("Account created! 🎉");
       navigate("/dashboard");
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error) {
+      console.log("Register error:", error);
+      toast.error(error.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
